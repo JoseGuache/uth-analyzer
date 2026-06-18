@@ -42,11 +42,18 @@ def flop_raise(player_cards, community_cards):
 
 def river_raise(player_cards, community_cards):
     all_cards = player_cards + community_cards
-    player_hand = evaluate_best_hand(all_cards)
-    board_hand = evaluate_five_card_hand(community_cards)
+    hand_score = evaluate_best_hand(all_cards)[0]
+    
+    if hand_score >= 3:
+        return True
+    
+    # check for a hidden pair (pair using at least one hole card)
+    p1, p2 = get_rank_value(player_cards[0]), get_rank_value(player_cards[1])
+    board_ranks = [get_rank_value(c) for c in community_cards]
 
-    if player_hand[0] > board_hand[0]:
-        return True
-    if player_hand[0] == board_hand[0] and player_hand [1] > board_hand[1]:
-        return True
+    if p1 == p2:
+        return True   # pocket pair
+    if p1 in board_ranks or p2 in board_ranks:
+        return True   # one hole card pairs the board
+    
     return False
